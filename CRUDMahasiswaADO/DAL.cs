@@ -167,6 +167,23 @@ namespace CRUDMahasiswaADO
             }
         }
 
- 
+        public DataTable GetMhsByNIM(string nim)
+        {
+            if (conn.State == ConnectionState.Closed)
+                conn.Open();
+
+            SqlCommand cmd = new SqlCommand("sp_GetMahasiswaByNIM", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("pNIM", nim);
+
+            da = new SqlDataAdapter(cmd);
+            dtMahasiswa = new DataTable();
+            da.Fill(dtMahasiswa);
+
+            conn.Close();
+            return dtMahasiswa;
+        }
+
+  
     }
 }
