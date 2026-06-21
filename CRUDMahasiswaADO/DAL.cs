@@ -145,6 +145,28 @@ namespace CRUDMahasiswaADO
             conn.Close();
         }
 
+        public void testInject(string nim)
+        {
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
 
+                string query = "UPDATE mahasiswa SET nama = 'HACKED' WHERE NIM = " + nim;
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error saat simulasi SQL Injection: " + ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
+        }
+
+ 
     }
 }
