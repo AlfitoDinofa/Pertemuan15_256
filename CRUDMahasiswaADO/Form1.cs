@@ -147,7 +147,7 @@ namespace CRUDMahasiswaADO
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(dbLogic.GetConnectionString()))
+                using (SqlConnection conn = new SqlConnection(DAL.GetConnectionString()))
                 {
                     conn.Open();
                     MessageBox.Show("Koneksi Berhasil");
@@ -552,6 +552,11 @@ namespace CRUDMahasiswaADO
                 SimpanLog("General Error : " + ex.Message);
                 MessageBox.Show("General Error : " + ex.Message);
             }
+        }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

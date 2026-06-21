@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Windows.Forms;
 
 namespace CRUDMahasiswaADO
 {
-    class DAL
+      class DAL
     {
-        static string connectionString = @"Data Source=LAPTOP-IF142S7G\ALFITO; Initial Catalog=DBAkademikADO; Integrated Security=True";
-
-        public string GetConnectionString()
+        // ========== CONNECTION STRING DINAMIS (STATIC) ==========
+        public static string GetConnectionString()
         {
+            // ========== PAKAI SERVER NAME (BUKAN IP) ==========
+            string connectionString = $"Data Source=LAPTOP-IF142S7G\\ALFITO;Initial Catalog=DBAkademikADO;User ID=sa;Password=123;";
             return connectionString;
         }
+        // ==========================================================
 
-        SqlConnection conn = new SqlConnection(connectionString);
+        // ========== KONEKSI STATIC ==========
+        private static SqlConnection conn = new SqlConnection(GetConnectionString());
+        // ====================================
+
         SqlDataAdapter da;
         DataTable dtMahasiswa;
         DataTable dtProdi;
@@ -121,11 +127,7 @@ namespace CRUDMahasiswaADO
             }
 
             SqlCommand cmd = new SqlCommand("sp_DeleteMahasiswa", conn);
-
-            // ========== PERBAIKAN ==========
-            cmd.Parameters.AddWithValue("@NIM", nim);  // ← GANTI pNIM → NIM
-                                                       // ================================
-
+            cmd.Parameters.AddWithValue("@NIM", nim);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.ExecuteNonQuery();
             conn.Close();
@@ -263,5 +265,29 @@ namespace CRUDMahasiswaADO
             conn.Close();
             return dtMahasiswa;
         }
+
+        // ========== METHOD GET LOCAL IP ADDRESS ==========
+        public static string GetLocalIPAddress()
+        {
+            string localIP = string.Empty;
+            try
+            {
+                var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+                foreach (var ip in host.AddressList)
+                {
+                    if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        localIP = ip.ToString();
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error getting local IP address: " + ex.Message);
+            }
+            return localIP;
+        }
+        // ===================================================
     }
 }
