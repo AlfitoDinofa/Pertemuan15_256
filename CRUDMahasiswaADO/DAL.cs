@@ -55,6 +55,82 @@ namespace CRUDMahasiswaADO
             return dt;
         }
 
+        public void InsertMhs(string nim, string nama, string alamat, string jenisKelamin, DateTime tanggalLahir, string kodeProdi, byte[] foto)
+        {
+            if (conn.State == ConnectionState.Closed)
+                conn.Open();
+
+            SqlCommand command = new SqlCommand("sp_InsertMahasiswa", conn);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("pNIM", nim);
+            command.Parameters.AddWithValue("pNama", nama);
+            command.Parameters.AddWithValue("pAlamat", alamat);
+            command.Parameters.AddWithValue("pJenisKelamin", jenisKelamin);
+            command.Parameters.AddWithValue("pTanggalLahir", tanggalLahir);
+            command.Parameters.AddWithValue("pKodeProdi", kodeProdi);
+
+            SqlParameter paramFoto = new SqlParameter("pFoto", SqlDbType.VarBinary, -1);
+            paramFoto.Value = (object)foto ?? DBNull.Value;
+            command.Parameters.Add(paramFoto);
+
+            command.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public void UpdateMhs(string nim, string nama, string alamat, string jenisKelamin, DateTime tanggalLahir, string kodeProdi, byte[] foto, bool updateFoto)
+        {
+            if (conn.State == ConnectionState.Closed)
+                conn.Open();
+
+            SqlCommand command = new SqlCommand("sp_UpdateMahasiswa", conn);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("pNIM", nim);
+            command.Parameters.AddWithValue("pNama", nama);
+            command.Parameters.AddWithValue("pAlamat", alamat);
+            command.Parameters.AddWithValue("pJenisKelamin", jenisKelamin);
+            command.Parameters.AddWithValue("pTanggalLahir", tanggalLahir);
+            command.Parameters.AddWithValue("pKodeProdi", kodeProdi);
+
+            // ========== UPDATE FOTO HANYA JIKA ADA GAMBAR BARU ==========
+            if (updateFoto && foto != null)
+            {
+                SqlParameter paramFoto = new SqlParameter("pFoto", SqlDbType.VarBinary, -1);
+                paramFoto.Value = foto;
+                command.Parameters.Add(paramFoto);
+            }
+            else
+            {
+                // Jika tidak ada gambar baru, kirim NULL agar kolom Foto tidak berubah
+                SqlParameter paramFoto = new SqlParameter("pFoto", SqlDbType.VarBinary, -1);
+                paramFoto.Value = DBNull.Value;
+                command.Parameters.Add(paramFoto);
+            }
+            // =============================================================
+
+            command.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public void DeleteMhs(string nim)
+        {
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand("sp_DeleteMahasiswa", conn);
+
+            // ========== PERBAIKAN ==========
+            cmd.Parameters.AddWithValue("@NIM", nim);  // ← GANTI pNIM → NIM
+                                                       // ================================
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
  
     }
 }
